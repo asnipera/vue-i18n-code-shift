@@ -11,7 +11,7 @@ vue 项目国际化全流程解决方案: 一个命令行工具，对代码里�
 ## 安装
 
 ```shellscript
-npm install -g vue-i18n-auto-genetate
+npm install -g vue-i18n-auto-generate
 ```
 
 ## 使用
