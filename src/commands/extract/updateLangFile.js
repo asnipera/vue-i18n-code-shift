@@ -99,6 +99,7 @@ function updateExistLangFile(filename, translations) {
 
 let importModuleIndex = 0;
 function addImportToMainLangFile(newFilename) {
+  newFilename = newFilename.replace(/\\/g, '/');
   let mainContent = '';
   importModuleIndex++;
   moduleName = `ImportModuleName${importModuleIndex}`;
