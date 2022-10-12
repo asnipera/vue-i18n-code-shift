@@ -2,17 +2,17 @@
   "vicsDir": "./src/locale",
   "configFile": "./.vics/vics-config.json",
   "srcLang": "zh-CN",
-  "distLangs": ["en-US"],
+  "distLangs": ["en"],
   "langMap": {
-    "en_US": "en-US",
-    "en-US": "en-US",
+    "en_US": "en",
+    "en-US": "en",
     "en": "en"
   },
   "baiduAppid": "20200602000482988",
   "baiduKey": "CF5_meZdDAOtDzVkn2Nv",
   "importI18N": "import I18N from '@/i18n';",
   "i18nPath": "@/i18n",
-  "ignoreDir": ["src/locale"],
+  "ignoreDir": [],
   "ignoreFile": [],
   "exportColConfig": [
     "export_path",
@@ -25,8 +25,7 @@
     "语料说明图",
     "translatable",
     "formatted",
-    "zh_CN",
-    "en_US"
+    "zh_CN"
   ],
   "exportColIndexMap": {
     "businessLine": 1,

@@ -10,20 +10,20 @@ const PROJECT_CONFIG = {
     tabWidth: 2,
   },
   defaultConfig: {
-    vicsDir: './.vics',
+    vicsDir: './src/locale',
     configFile: `./.vics/${CONFIG_FILE_NAME}`,
     srcLang: 'zh-CN',
-    distLangs: ['en'],
+    distLangs: ['en-US'],
     langMap: {
-      en_US: 'en',
-      'en-US': 'en',
+      en_US: 'en_US',
+      'en-US': 'en-US',
       en: 'en',
     },
     baiduAppid: '20200602000482988',
     baiduKey: 'CF5_meZdDAOtDzVkn2Nv',
     importI18N: `import I18N from '@/i18n';`,
     i18nPath: '@/i18n',
-    ignoreDir: [],
+    ignoreDir: ['src/locale'],
     ignoreFile: [],
     exportColConfig: [
       'export_path',
@@ -37,6 +37,7 @@ const PROJECT_CONFIG = {
       'translatable',
       'formatted',
       'zh_CN',
+      'en_US',
     ],
     exportColIndexMap: {
       businessLine: 1,

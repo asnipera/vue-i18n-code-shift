@@ -75,9 +75,6 @@ async function init(existDir) {
     fs.mkdirSync(PROJECT_CONFIG.dir);
   }
   await creteConfigFile(existDir);
-  if (!(existDir && fs.existsSync(existDir))) {
-    await createCnFile();
-  }
 }
 
 module.exports = { init };
