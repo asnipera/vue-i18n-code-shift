@@ -107,12 +107,17 @@ function addImportToMainLangFile(newFilename) {
     mainContent = fs.readFileSync(`${srcLangDir}/index.js`, 'utf8');
     const matchs = mainContent.match(/import\s+.*\s+from\s+['"].*['"]/g);
     let lastImport = '';
-    if (matchs) {
-      lastImport = matchs[matchs.length - 1];
+    let replaceValue = `import ${moduleName} from './${newFilename}';`;
+    if (matchs && matchs.length) {
+      lastImport = matchs[matchs.length - 1] + ';';
+      replaceValue = `$1\n${replaceValue}`;
+    } else {
+      lastImport = 'export default {';
+      replaceValue = `${replaceValue}\n$1`;
     }
     mainContent = mainContent.replace(
-      new RegExp(`(${lastImport};)`),
-      `$1\nimport ${moduleName} from './${newFilename}';`
+      new RegExp(`(${lastImport})`),
+      replaceValue
     );
     if (/(}\);)/.test(mainContent)) {
       if (/\,\n(}\);)/.test(mainContent)) {
