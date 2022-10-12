@@ -16,15 +16,10 @@ const extractDir = async (dirPath, langFile) => {
     console.log(`${dirPath} 没有发现可替换的文案！`);
     return;
   }
-  let langFilename = langFile;
-  if (!langFilename) {
-    const names = slash(dirPath).split('/');
-    langFilename = _.camelCase(names[names.length - 1]);
-  }
 
   const translatedTargets = await translateFiles(translateTargets);
 
-  await updateLangFiles(`${dirPath}/index`, translatedTargets);
+  await updateLangFiles(`index`, translatedTargets);
 };
 
 const extractDirs = async (dirs, langFile) => {

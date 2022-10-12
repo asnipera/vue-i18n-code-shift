@@ -21,7 +21,7 @@ function updateLangFiles(filename, translatedFiles) {
       targetFilename,
       updateExistLangFile(null, translatedFiles)
     );
-    addImportToMainLangFile(filename);
+    // addImportToMainLangFile(filename);
     console.log(`成功新建语言文件 ${targetFilename}`);
   } else {
     fs.writeFileSync(
