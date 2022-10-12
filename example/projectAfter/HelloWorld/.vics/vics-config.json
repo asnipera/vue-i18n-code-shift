@@ -12,7 +12,7 @@
   "baiduKey": "CF5_meZdDAOtDzVkn2Nv",
   "importI18N": "import I18N from '@/i18n';",
   "i18nPath": "@/i18n",
-  "ignoreDir": [],
+  "ignoreDir": ["src/locale"],
   "ignoreFile": [],
   "exportColConfig": [
     "export_path",
@@ -25,7 +25,8 @@
     "语料说明图",
     "translatable",
     "formatted",
-    "zh_CN"
+    "zh_CN",
+    "en_US"
   ],
   "exportColIndexMap": {
     "businessLine": 1,

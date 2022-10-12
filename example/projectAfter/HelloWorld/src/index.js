@@ -1,1 +1,2 @@
-console.log('已已已已');
+import I18N from '@/i18n';
+console.log('多点点');

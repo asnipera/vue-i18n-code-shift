@@ -132,11 +132,9 @@ async function exportLang(distLang, range, businessLine, outputFilename) {
       rangeText = '全量';
     }
     const projectConfig = getProjectConfig();
-    console.log(projectConfig, 9999999999999);
     const outputFile =
       outputFilename ||
       `${projectConfig.vicsDir}/${businessLine || ''}${rangeText}语料-${lang}`;
-    console.log(`${outputFile}.xlsx`, 9999999999999);
     fs.writeFileSync(`${outputFile}.xlsx`, xlsxContent);
     console.log(`已导出 ${outputFile}`);
   });
