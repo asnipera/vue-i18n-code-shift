@@ -1,10 +1,8 @@
 {
-  "vicsDir": "./.vics",
+  "vicsDir": "./src/locale",
   "configFile": "./.vics/vics-config.json",
   "srcLang": "zh-CN",
-  "distLangs": [
-    "en"
-  ],
+  "distLangs": ["en"],
   "langMap": {
     "en_US": "en",
     "en-US": "en",

@@ -3,6 +3,7 @@ const path = require('path');
 const xlsx = require('node-xlsx');
 const { getProjectConfig, getLangDir } = require('../../utils/config');
 const { getLangData } = require('../extract/getLangData');
+const { mkdirsSync } = require('../../utils/dir');
 
 const CONFIG = getProjectConfig();
 const COL_CONFIG = CONFIG.exportColConfig;
@@ -75,8 +76,8 @@ function getTexts(srcLangDir, distLangDir, businessLine, isAll) {
 function getTargetFiles(distLang, businessLine, isAll) {
   const srcLangDir = getLangDir(CONFIG.srcLang);
   const distLangDir = getLangDir(distLang);
-
   if (!fs.existsSync(distLangDir)) {
+    mkdirsSync(srcLangDir);
     return getTexts(srcLangDir, false, businessLine, isAll);
   }
 
@@ -118,10 +119,8 @@ function createXlsx(files, distLang, isAll) {
 async function exportLang(distLang, range, businessLine, outputFilename) {
   const langs = distLang ? [distLang] : CONFIG.distLangs;
   const isAll = range === EXPORT_TYPE.ALL;
-
   langs.forEach((lang) => {
     const targetFiles = getTargetFiles(lang, businessLine, isAll);
-    console.log(targetFiles, 11111111);
     if (targetFiles.length === 0) {
       console.log(`${lang} 没有未翻译的文案了`);
       return;
@@ -132,8 +131,12 @@ async function exportLang(distLang, range, businessLine, outputFilename) {
     if (isAll) {
       rangeText = '全量';
     }
+    const projectConfig = getProjectConfig();
+    console.log(projectConfig, 9999999999999);
     const outputFile =
-      outputFilename || `./${businessLine || ''}${rangeText}语料-${lang}`;
+      outputFilename ||
+      `${projectConfig.vicsDir}/${businessLine || ''}${rangeText}语料-${lang}`;
+    console.log(`${outputFile}.xlsx`, 9999999999999);
     fs.writeFileSync(`${outputFile}.xlsx`, xlsxContent);
     console.log(`已导出 ${outputFile}`);
   });

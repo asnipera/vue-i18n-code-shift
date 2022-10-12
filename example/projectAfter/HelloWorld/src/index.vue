@@ -1,7 +1,7 @@
 <template>
   <div class="hello">
     <p>加油</p>
-    <input :placeholder="属性" />
+    <input placeholder="属性" />
   </div>
 </template>
 
