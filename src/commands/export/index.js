@@ -24,7 +24,7 @@ function getTexts(srcLangDir, distLangDir, businessLine, isAll) {
   const allFiles = fs.readdirSync(srcLangDir);
 
   const files = allFiles
-    .filter((file) => file.endsWith('.js') && file !== 'index.js')
+    .filter((file) => file.endsWith('.js'))
     .map((file) => file);
   files.forEach((file) => {
     const srcFile = path.resolve(srcLangDir, file);
@@ -121,7 +121,7 @@ async function exportLang(distLang, range, businessLine, outputFilename) {
 
   langs.forEach((lang) => {
     const targetFiles = getTargetFiles(lang, businessLine, isAll);
-
+    console.log(targetFiles, 11111111);
     if (targetFiles.length === 0) {
       console.log(`${lang} 没有未翻译的文案了`);
       return;
