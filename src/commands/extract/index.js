@@ -40,20 +40,17 @@ const extractAll = async (dir, depth = '0', langFile) => {
     return;
   }
 
-  let level = depth;
-
-  while (level != undefined) {
-    console.log(`开始提取 ${dir} 下的第 ${level} 层级目录`);
-    if (level === '0') {
+  while (depth != undefined) {
+    if (depth === '0') {
       await extractDir(dir, langFile);
-      level++;
+      depth++;
     } else {
-      const dirs = getDirsByLevel(dir, level);
+      const dirs = getDirsByLevel(dir, depth);
       if (dirs.length) {
         await extractDirs(dirs, langFile);
-        level++;
+        depth++;
       } else {
-        level = undefined;
+        depth = undefined;
       }
     }
   }

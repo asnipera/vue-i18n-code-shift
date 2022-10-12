@@ -21,8 +21,7 @@ const replaceDir = async (dirPath, langFile) => {
     const names = slash(dirPath).split('/');
     langFilename = _.camelCase(names[names.length - 1]);
   }
-
-  replaceTargets(langFilename, translateTargets);
+  replaceTargets('index', translateTargets);
 };
 
 const replaceDirs = async (dirs, langFile) => {
@@ -37,11 +36,19 @@ const replaceDirs = async (dirs, langFile) => {
 };
 
 const replaceAll = (dir, depth = '0', langFile) => {
-  if (depth === '0') {
-    replaceDir(dir, langFile);
-  } else {
-    const dirs = getDirsByLevel(dir, depth, undefined, CONFIG.ignoreDir);
-    replaceDirs(dirs, langFile);
+  while (depth != undefined) {
+    if (depth === '0') {
+      replaceDir(dir, langFile);
+      depth++;
+    } else {
+      const dirs = getDirsByLevel(dir, depth, undefined, CONFIG.ignoreDir);
+      if (dirs.length) {
+        replaceDirs(dirs, langFile);
+        depth++;
+      } else {
+        depth = undefined;
+      }
+    }
   }
 };
 

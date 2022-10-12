@@ -165,7 +165,7 @@ function updateTargetFile({ filePath, texts, langObj, langFilename }) {
   }
 
   try {
-    const targetFilename = `${srcLangDir}/${langFilename}.js`;
+    const targetFilename = `${srcLangDir}//${langFilename}.js`;
     updateLangFileWithNewText(targetFilename, langFileNewTexts);
     writeFile(filePath, newFileContent);
 

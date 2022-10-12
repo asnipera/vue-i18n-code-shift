@@ -11,7 +11,6 @@ const srcLangDir = getLangDir(CONFIG.srcLang);
 
 function updateLangFiles(filename, translatedFiles) {
   const targetFilename = `${srcLangDir}/${filename}.js`;
-  console.log(`正在更新语言文件 ${targetFilename}`);
   if (!fs.existsSync(targetFilename)) {
     const dir = slash(targetFilename).split('/').slice(0, -1).join('/');
     if (dir && !fs.existsSync(dir)) {
@@ -59,7 +58,6 @@ function updateExistLangFile(filename, translations) {
   let obj = {};
   if (filename) {
     const fileContent = getLangData(filename);
-    console.log(`正在更新语言文件 ${filename}`, fileContent);
     obj = fileContent;
     if (Object.keys(obj).length === 0) {
       console.log(`${filename} 解析失败，该文件包含的文案无法自动补全`);
