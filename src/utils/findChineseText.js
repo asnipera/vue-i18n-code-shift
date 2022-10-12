@@ -161,7 +161,7 @@ function findAllChineseText(dirPath) {
     CONFIG.ignoreFile
   );
   const filterFiles = filesPath.filter((filePath) => {
-    return filePath.endsWith('.vue') || filePath.endsWith('.js');
+    return filePath.endsWith('.vue') || filePath.endsWith('.js') || filePath.endsWith('.ts');
   });
   const allTexts = filterFiles.reduce((all, filePath) => {
     const texts = findChineseText(filePath);

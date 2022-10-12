@@ -16,7 +16,6 @@ const extractDir = async (dirPath, langFile) => {
     console.log(`${dirPath} 没有发现可替换的文案！`);
     return;
   }
-
   let langFilename = langFile;
   if (!langFilename) {
     const names = slash(dirPath).split('/');
@@ -25,12 +24,13 @@ const extractDir = async (dirPath, langFile) => {
 
   const translatedTargets = await translateFiles(translateTargets);
 
-  await updateLangFiles(langFilename, translatedTargets);
+  await updateLangFiles(`${dirPath}/index`, translatedTargets);
 };
 
 const extractDirs = async (dirs, langFile) => {
   for await (let dirPath of dirs) {
     if (dirPath && fs.statSync(dirPath).isDirectory()) {
+      console.log(`开始提取 ${dirPath} 目录`);
       await extractDir(dirPath, langFile);
       console.log(`${dirPath} 提取完成！`);
     } else {
@@ -45,11 +45,22 @@ const extractAll = async (dir, depth = '0', langFile) => {
     return;
   }
 
-  if (depth === '0') {
-    await extractDir(dir, langFile);
-  } else {
-    const dirs = getDirsByLevel(dir, depth, undefined, CONFIG.ignoreDir);
-    await extractDirs(dirs, langFile);
+  let level = depth;
+
+  while (level != undefined) {
+    console.log(`开始提取 ${dir} 下的第 ${level} 层级目录`);
+    if (level === '0') {
+      await extractDir(dir, langFile);
+      level++;
+    } else {
+      const dirs = getDirsByLevel(dir, level);
+      if (dirs.length) {
+        await extractDirs(dirs, langFile);
+        level++;
+      } else {
+        level = undefined;
+      }
+    }
   }
 };
 

@@ -19,7 +19,7 @@
   "author": "jonjia <jiawenhuiwar3@163.com>",
   "main": "src/index.js",
   "bin": {
-    "vics": "src/index.js"
+    "i": "src/index.js"
   },
   "dependencies": {
     "axios": "^0.21.1",

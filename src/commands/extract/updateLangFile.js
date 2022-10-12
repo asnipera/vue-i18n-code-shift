@@ -4,13 +4,19 @@ const randomstring = require('randomstring');
 const { getLangData } = require('./getLangData');
 const { getProjectConfig, getLangDir } = require('../../utils/config');
 const { formatText, prettierFile } = require('../../utils/common');
+const slash = require('slash2');
 
 const CONFIG = getProjectConfig();
 const srcLangDir = getLangDir(CONFIG.srcLang);
 
 function updateLangFiles(filename, translatedFiles) {
   const targetFilename = `${srcLangDir}/${filename}.js`;
+  console.log(`正在更新语言文件 ${targetFilename}`);
   if (!fs.existsSync(targetFilename)) {
+    const dir = slash(targetFilename).split('/').slice(0, -1).join('/');
+    if (dir && !fs.existsSync(dir)) {
+      fs.mkdirSync(dir);
+    }
     fs.writeFileSync(
       targetFilename,
       updateExistLangFile(null, translatedFiles)
@@ -53,6 +59,7 @@ function updateExistLangFile(filename, translations) {
   let obj = {};
   if (filename) {
     const fileContent = getLangData(filename);
+    console.log(`正在更新语言文件 ${filename}`, fileContent);
     obj = fileContent;
     if (Object.keys(obj).length === 0) {
       console.log(`${filename} 解析失败，该文件包含的文案无法自动补全`);
@@ -90,23 +97,26 @@ function updateExistLangFile(filename, translations) {
   return prettierFile(`export default ${JSON.stringify(obj, null, 2)}`);
 }
 
+let importModuleIndex = 0;
 function addImportToMainLangFile(newFilename) {
   let mainContent = '';
+  importModuleIndex++;
+  moduleName = `ImportModuleName${importModuleIndex}`;
   if (fs.existsSync(`${srcLangDir}/index.js`)) {
     mainContent = fs.readFileSync(`${srcLangDir}/index.js`, 'utf8');
     mainContent = mainContent.replace(
       /^(\s*import.*?;)$/m,
-      `$1\nimport ${newFilename} from './${newFilename}';`
+      `$1\nimport ${moduleName} from './${newFilename}';`
     );
     if (/(}\);)/.test(mainContent)) {
       if (/\,\n(}\);)/.test(mainContent)) {
         /** 最后一行包含,号 */
-        mainContent = mainContent.replace(/(}\);)/, `  ${newFilename},\n$1`);
+        mainContent = mainContent.replace(/(}\);)/, `  ${moduleName},\n$1`);
       } else {
         /** 最后一行不包含,号 */
         mainContent = mainContent.replace(
           /\n(}\);)/,
-          `,\n  ${newFilename},\n$1`
+          `,\n  ${moduleName},\n$1`
         );
       }
     }
@@ -114,14 +124,14 @@ function addImportToMainLangFile(newFilename) {
     if (/(};)/.test(mainContent)) {
       if (/\,\n(};)/.test(mainContent)) {
         /** 最后一行包含,号 */
-        mainContent = mainContent.replace(/(};)/, `  ${newFilename},\n$1`);
+        mainContent = mainContent.replace(/(};)/, `  ${moduleName},\n$1`);
       } else {
         /** 最后一行不包含,号 */
-        mainContent = mainContent.replace(/\n(};)/, `,\n  ${newFilename},\n$1`);
+        mainContent = mainContent.replace(/\n(};)/, `,\n  ${moduleName},\n$1`);
       }
     }
   } else {
-    mainContent = `import ${newFilename} from './${newFilename}';\n\nexport default Object.assign({}, {\n  ${newFilename},\n});`;
+    mainContent = `import ${moduleName} from './${newFilename}';\n\nexport default Object.assign({}, {\n  ${moduleName},\n});`;
   }
 
   fs.writeFileSync(`${srcLangDir}/index.js`, mainContent);
