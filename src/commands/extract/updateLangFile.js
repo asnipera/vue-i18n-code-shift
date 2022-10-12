@@ -5,6 +5,7 @@ const { getLangData } = require('./getLangData');
 const { getProjectConfig, getLangDir } = require('../../utils/config');
 const { formatText, prettierFile } = require('../../utils/common');
 const slash = require('slash2');
+const { mkdirsSync } = require('../../utils/dir');
 
 const CONFIG = getProjectConfig();
 const srcLangDir = getLangDir(CONFIG.srcLang);
@@ -13,9 +14,7 @@ function updateLangFiles(filename, translatedFiles) {
   const targetFilename = `${srcLangDir}/${filename}.js`;
   if (!fs.existsSync(targetFilename)) {
     const dir = slash(targetFilename).split('/').slice(0, -1).join('/');
-    if (dir && !fs.existsSync(dir)) {
-      fs.mkdirSync(dir);
-    }
+    mkdirsSync(dir);
     fs.writeFileSync(
       targetFilename,
       updateExistLangFile(null, translatedFiles)
