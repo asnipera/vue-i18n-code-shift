@@ -2,10 +2,10 @@
   "vicsDir": "./src/locale",
   "configFile": "./.vics/vics-config.json",
   "srcLang": "zh-CN",
-  "distLangs": ["en"],
+  "distLangs": ["en-US"],
   "langMap": {
-    "en_US": "en",
-    "en-US": "en",
+    "en_US": "en-US",
+    "en-US": "en-US",
     "en": "en"
   },
   "baiduAppid": "20200602000482988",

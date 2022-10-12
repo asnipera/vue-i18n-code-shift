@@ -1,8 +1,8 @@
 <template>
   <div class="hello">
-    <p>{{ $t('index.haHaHa') }}</p>
-    <!-- {{ $t('index.haHaHa') }} -->
-    <input :placeholder="$t('index.attribute')" />
+    <p>哈哈哈</p>
+    <!-- 哈哈哈 -->
+    <input placeholder="属性" />
   </div>
 </template>
 
@@ -10,7 +10,7 @@
 export default {
   name: 'HelloWorld',
   mounted() {
-    console.log(I18N.t('index.attribute'));
+    console.log('属性');
   },
 };
 </script>

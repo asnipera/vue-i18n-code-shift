@@ -1,5 +1,5 @@
 {
-  "name": "vue-i18n-auto-translate",
+  "name": "vue-i18n-auto-genetate",
   "version": "1.0.0",
   "packageManager": "pnpm@7.5.0",
   "description": "vue 项目国际化全流程解决方案: 一个命令行工具，对代码里的中文文案一键完成提取、替换、翻译、导入、导出等，告别手动操作",
