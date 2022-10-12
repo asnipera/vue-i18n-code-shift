@@ -38,7 +38,7 @@ function importLang(lang, filePath) {
   }
 
   const langContent = xlsx.parse(filePath);
-  console.log(langContent);
+
   if (langContent.length > 0) {
     updateLangFile(langContent, CONFIG.langMap[lang]);
     console.log(`已导入 ${lang} 对应的语料：${filePath}`);
