@@ -93,7 +93,7 @@ npm install -g vue-i18n-code-shift
 
 ### `vics one`
 
-**一键提取并替换**指定文件夹、指定层级（默认为 0）下的所有中文文案，可以指定语料文件（默认为指定文件夹名字）
+**一键提取并替换**指定文件夹、指定层级（默认为 0）下的所有中文文案(包含子目录)，可以指定语料文件（默认为指定文件夹名字）
 
 ```shellscript
 vics one [dirPath] [level] [langFilename]
@@ -101,7 +101,7 @@ vics one [dirPath] [level] [langFilename]
 
 ### `vics extract`
 
-**提取**指定文件夹、指定层级(默认为 0)下的所有中文文案，可以指定语料文件（默认为指定文件夹名字）
+**提取**指定文件夹、指定层级(默认为 0)下的所有中文文案(包含子目录)，可以指定语料文件（默认为指定文件夹名字）
 
 ```shellscript
 vics extract [dirPath] [level] [langFilename]
@@ -109,7 +109,7 @@ vics extract [dirPath] [level] [langFilename]
 
 ### `vics replace`
 
-**替换**指定文件夹、指定层级(默认为 0)下的所有中文文案，可以指定语料文件（默认为指定文件夹名字）
+**替换**指定文件夹、指定层级(默认为 0)下的所有中文文案(包含子目录)，可以指定语料文件（默认为指定文件夹名字）
 
 ```shellscript
 vics replace [dirPath] [level] [langFilename]
@@ -179,8 +179,9 @@ vics check [filePath]
 
 ## Authors
 
-- **[jonjia](https://github.com/jonjia)**
+- **[asnipera](https://github.com/asnipera)**
 - Inspired by **[kiwi](https://github.com/alibaba/kiwi)**
+- Inspired by **[jonjia/vue-i18n-code-shift](https://github.com/jonjia/vue-i18n-code-shift)**
 
 ## License
 

@@ -1,6 +1,6 @@
 {
-  "name": "vue-i18n-code-shift",
-  "version": "1.0.1",
+  "name": "neo-vue-i18n-code-shift",
+  "version": "1.0.0",
   "packageManager": "pnpm@7.5.0",
   "description": "vue 项目国际化全流程解决方案: 一个命令行工具，对代码里的中文文案一键完成提取、替换、翻译、导入、导出等，告别手动操作",
   "keywords": [
@@ -10,13 +10,13 @@
     "codeshift",
     "tool"
   ],
-  "homepage": "https://github.com/jonjia/vue-i18n-code-shift",
+  "homepage": "https://github.com/asnipera/vue-i18n-code-shift",
   "bugs": {
-    "url": "https://github.com/jonjia/vue-i18n-code-shift/issues"
+    "url": "https://github.com/asnipera/vue-i18n-code-shift/issues"
   },
-  "repository": "git@github.com:jonjia/vue-i18n-code-shift.git",
+  "repository": "git@github.com:asnipera/vue-i18n-code-shift.git",
   "license": "MIT",
-  "author": "jonjia <jiawenhuiwar3@163.com>",
+  "author": "liyan <liyan.sz@neotrident.com>",
   "main": "src/index.js",
   "bin": {
     "i": "src/index.js"
