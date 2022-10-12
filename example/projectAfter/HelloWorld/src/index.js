@@ -1,2 +1,2 @@
 import I18N from '@/i18n';
-console.log('多点点');
+console.log(I18N.t('index.more'));

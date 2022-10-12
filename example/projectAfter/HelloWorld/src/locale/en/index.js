@@ -1,5 +1,6 @@
 export default {
-  more: 'a',
-  attribute: 'b',
-  comeOn: 'c',
+  more: 'q',
+  attribute: 'i',
+  comeOn: 'r',
+  haHaHa: 't',
 };
