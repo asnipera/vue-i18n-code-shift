@@ -105,8 +105,13 @@ function addImportToMainLangFile(newFilename) {
   moduleName = `ImportModuleName${importModuleIndex}`;
   if (fs.existsSync(`${srcLangDir}/index.js`)) {
     mainContent = fs.readFileSync(`${srcLangDir}/index.js`, 'utf8');
+    const matchs = mainContent.match(/import\s+.*\s+from\s+['"].*['"]/g);
+    let lastImport = '';
+    if (matchs) {
+      lastImport = matchs[matchs.length - 1];
+    }
     mainContent = mainContent.replace(
-      /^(\s*import.*?;)$/m,
+      new RegExp(`(${lastImport};)`),
       `$1\nimport ${moduleName} from './${newFilename}';`
     );
     if (/(}\);)/.test(mainContent)) {
