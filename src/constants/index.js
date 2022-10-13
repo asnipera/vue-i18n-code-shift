@@ -19,7 +19,7 @@ const PROJECT_CONFIG = {
       'en-US': 'en-US',
       en: 'en',
     },
-    keyGenerate: 'baidu', // 'baidu' | function
+    keyPrefix: '', // 如果设置了keyPrefix, 则生成的key为: `${keyPrefix}${index}`； 否则通过百度翻译生成key
     // https://api.fanyi.baidu.com/doc/21, 通用翻译API接入文档
     baiduAppAPI: 'https://fanyi-api.baidu.com/api/trans/vip/translate',
     baiduAppid: '20200602000482988',

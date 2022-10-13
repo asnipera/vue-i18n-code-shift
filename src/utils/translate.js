@@ -63,10 +63,10 @@ function cutText(allTexts) {
   return res;
 }
 
-async function translate(piece, toLang) {
-  const { keyGenerate, baiduAppAPI, rate } = getProjectConfig();
-  if (typeof keyGenerate === 'function') {
-    return keyGenerate(piece, toLang);
+async function translate(piece, toLang, index) {
+  const { keyPrefix, baiduAppAPI, rate } = getProjectConfig();
+  if (keyPrefix) {
+    return piece.map((text) => `${keyPrefix}${index}`);
   } else {
     await sleep(rate);
     return await translateTextByBaidu(piece, toLang, baiduAppAPI);
@@ -74,6 +74,7 @@ async function translate(piece, toLang) {
 }
 
 async function translateTexts(texts, toLang = 'en') {
+  let index = 0;
   const allTexts = texts.reduce((acc, curr) => {
     // 避免翻译的字符里包含数字或者特殊字符等情况
     const reg = /[^a-zA-Z\x00-\xff]+/g;
@@ -85,7 +86,8 @@ async function translateTexts(texts, toLang = 'en') {
     let result = [];
     for await (piece of cutText(allTexts)) {
       if (piece.length && piece.join('').length) {
-        const translated = await translate(piece, toLang);
+        const translated = await translate(piece, toLang, ++index);
+        console.log(translated);
         result = [...result, ...translated];
       }
     }
