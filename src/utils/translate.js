@@ -1,6 +1,7 @@
 const axios = require('axios').default;
 const MD5 = require('./md5');
 const { getProjectConfig } = require('./config');
+const { sleep } = require('./common');
 
 const BAI_DU_LIMIT_WORD = 800;
 
@@ -13,7 +14,7 @@ function withTimeout(promise, ms) {
   return Promise.race([promise, timeoutPromise]);
 }
 
-function translateTextByBaidu(texts, toLang) {
+function translateTextByBaidu(texts, toLang, baiduAppAPI) {
   const textsStr = texts.join('\n');
   const { baiduAppid, baiduKey, langMap } = getProjectConfig();
   const salt = new Date().getTime();
@@ -22,7 +23,7 @@ function translateTextByBaidu(texts, toLang) {
   return withTimeout(
     new Promise((resolve, reject) => {
       axios
-        .get('http://api.fanyi.baidu.com/api/trans/vip/translate', {
+        .get(baiduAppAPI, {
           params: {
             q: textsStr,
             from: 'zh',
@@ -41,7 +42,7 @@ function translateTextByBaidu(texts, toLang) {
           }
         });
     }),
-    5000
+    15000
   );
 }
 
@@ -62,7 +63,17 @@ function cutText(allTexts) {
   return res;
 }
 
-async function translateTexts(texts, toLang = 'en_US') {
+async function translate(piece, toLang) {
+  const { keyGenerate, baiduAppAPI, rate } = getProjectConfig();
+  if (typeof keyGenerate === 'function') {
+    return keyGenerate(piece, toLang);
+  } else {
+    await sleep(rate);
+    return await translateTextByBaidu(piece, toLang, baiduAppAPI);
+  }
+}
+
+async function translateTexts(texts, toLang = 'en') {
   const allTexts = texts.reduce((acc, curr) => {
     // 避免翻译的字符里包含数字或者特殊字符等情况
     const reg = /[^a-zA-Z\x00-\xff]+/g;
@@ -74,7 +85,7 @@ async function translateTexts(texts, toLang = 'en_US') {
     let result = [];
     for await (piece of cutText(allTexts)) {
       if (piece.length && piece.join('').length) {
-        const translated = await translateTextByBaidu(piece, toLang);
+        const translated = await translate(piece, toLang);
         result = [...result, ...translated];
       }
     }

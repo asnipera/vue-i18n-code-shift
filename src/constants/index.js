@@ -19,8 +19,12 @@ const PROJECT_CONFIG = {
       'en-US': 'en-US',
       en: 'en',
     },
+    keyGenerate: 'baidu', // 'baidu' | function
+    // https://api.fanyi.baidu.com/doc/21, 通用翻译API接入文档
+    baiduAppAPI: 'https://fanyi-api.baidu.com/api/trans/vip/translate',
     baiduAppid: '20200602000482988',
     baiduKey: 'CF5_meZdDAOtDzVkn2Nv',
+    rate: 100,
     importI18N: `import I18N from '@/i18n';`,
     i18nPath: '@/i18n',
     ignoreDir: ['src/locale'],

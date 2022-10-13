@@ -39,9 +39,16 @@ function prettierFile(fileContent) {
   }
 }
 
+function sleep(time) {
+  return new Promise(function (resolve) {
+    setTimeout(resolve, time);
+  });
+}
+
 module.exports = {
   findMatchKey,
   findMatchValue,
   formatText,
   prettierFile,
+  sleep,
 };
