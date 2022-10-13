@@ -1,12 +1,11 @@
 const fs = require('fs-extra');
+const slash = require('slash2');
 const _ = require('lodash');
 const randomstring = require('randomstring');
 const { getLangData } = require('./getLangData');
 const { getProjectConfig, getLangDir } = require('../../utils/config');
 const { formatText, prettierFile } = require('../../utils/common');
-const slash = require('slash2');
 const { mkdirsSync } = require('../../utils/dir');
-const { green } = require('chalk');
 
 const CONFIG = getProjectConfig();
 const srcLangDir = getLangDir(CONFIG.srcLang);
@@ -21,7 +20,6 @@ function updateLangFiles(filename, translatedFiles) {
       updateExistLangFile(null, translatedFiles)
     );
     // addImportToMainLangFile(filename);
-    console.log(`成功新建语言文件 ${targetFilename}`);
   } else {
     fs.writeFileSync(
       targetFilename,
@@ -53,6 +51,19 @@ function updateLangFileWithNewText(filename, textPairs) {
   fs.writeFileSync(filename, newContent);
 }
 
+function getLasteKeyIndex() {
+  const { vicsDir, srcLang } = CONFIG;
+  const langFile = `${vicsDir}/${srcLang}/index.js`;
+  const initKeyIndex = 0;
+
+  if (!fs.existsSync(langFile)) {
+    return initKeyIndex;
+  }
+  const lang = fs.readFileSync(langFile, 'utf8');
+  const match = lang.replace(/\n/g, '').match(/(?<=key)\d+(?=:)/g);
+  return match ? match[match.length - 1] : initKeyIndex;
+}
+
 function updateExistLangFile(filename, translations) {
   let obj = {};
   if (filename) {
@@ -63,33 +74,24 @@ function updateExistLangFile(filename, translations) {
       return;
     }
   }
-
+  let keyIndex = getLasteKeyIndex();
   translations.forEach(({ texts, translatedTexts }) => {
-    translatedTexts.forEach((translatedText, index) => {
-      const value = formatText(texts[index]);
-      let camelCaseKey = _.camelCase(translatedText);
-
-      if (!Object.values(obj).includes(value)) {
-        if (
-          Object.keys(obj).includes(camelCaseKey) &&
-          obj[camelCaseKey] !== value
-        ) {
-          while (Object.keys(obj).includes(camelCaseKey)) {
-            const uuidChar = `${randomstring.generate({
-              length: 1,
-              charset: 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM',
-            })}`;
-            camelCaseKey = _.camelCase(`${camelCaseKey} ${uuidChar}`);
-          }
-          console.log(
-            `"${value}" 需要的 key 已经被占用，随机分配为：${camelCaseKey}`
-          );
-        }
-        if (camelCaseKey) {
-          _.set(obj, camelCaseKey, value);
-        }
-      }
+    const unTranslatedTexts = texts.filter((text) => {
+      return !Object.values(obj).includes(text);
     });
+    if (unTranslatedTexts.length) {
+      const { keyPrefix } = CONFIG;
+      unTranslatedTexts.forEach((value) => {
+        let key = '';
+        if (keyPrefix) {
+          key = `${keyPrefix}${++keyIndex}`;
+        } else {
+          const translateTextIndex = texts.indexOf(value);
+          key = translatedTexts[translateTextIndex];
+        }
+        _.set(obj, key, value);
+      });
+    }
   });
   return prettierFile(`export default ${JSON.stringify(obj, null, 2)}`);
 }

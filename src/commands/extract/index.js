@@ -23,7 +23,6 @@ const extractDir = async (dirPath) => {
     return;
   }
   const translatedTargets = await translateFiles(translateTargets);
-
   updateLangFiles(`index`, translatedTargets);
 };
 

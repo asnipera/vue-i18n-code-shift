@@ -15,9 +15,9 @@ function withTimeout(promise, ms) {
   return Promise.race([promise, timeoutPromise]);
 }
 
-function translateTextByBaidu(texts, toLang, baiduAppAPI) {
+function translateTextByBaidu(texts, toLang) {
   const textsStr = texts.join('\n');
-  const { baiduAppid, baiduKey, langMap } = getProjectConfig();
+  const { baiduAppid, baiduKey, langMap, baiduAppAPI } = getProjectConfig();
   const salt = new Date().getTime();
   const signStr = baiduAppid + textsStr + salt + baiduKey;
   const sign = MD5(signStr);
@@ -64,24 +64,7 @@ function cutText(allTexts) {
   return res;
 }
 
-async function translate(piece, toLang, keyConfig = { keyIndex: 0 }) {
-  const { keyPrefix, baiduAppAPI, rate } = getProjectConfig();
-  if (keyPrefix) {
-    return piece.map(() => {
-      keyConfig.keyIndex++;
-      return `${keyPrefix}.${keyConfig.keyIndex}`;
-    });
-  } else {
-    await sleep(rate);
-    return await translateTextByBaidu(piece, toLang, baiduAppAPI);
-  }
-}
-
-async function translateTexts(
-  texts,
-  toLang = 'en',
-  keyConfig = { keyIndex: 0 }
-) {
+async function translateTexts(texts, toLang = 'en') {
   const allTexts = texts.reduce((acc, curr) => {
     // 避免翻译的字符里包含数字或者特殊字符等情况
     const reg = /[^a-zA-Z\x00-\xff]+/g;
@@ -93,7 +76,14 @@ async function translateTexts(
     let result = [];
     for await (piece of cutText(allTexts)) {
       if (piece.length && piece.join('').length) {
-        const translated = await translate(piece, toLang, keyConfig);
+        const { keyPrefix, rate } = getProjectConfig();
+        let translated = [];
+        if (keyPrefix) {
+          translated = [];
+        } else {
+          await sleep(rate);
+          translated = await translateTextByBaidu(piece, toLang);
+        }
         result = [...result, ...translated];
       }
     }
@@ -103,33 +93,12 @@ async function translateTexts(
   }
 }
 
-let keyConfig = {
-  keyIndex: 0,
-};
-
-function getLasteKeyIndex() {
-  const projectConfig = getProjectConfig();
-  const { vicsDir, srcLang } = projectConfig;
-  const langFile = `${vicsDir}/${srcLang}/index.js`;
-  if (!fs.existsSync(langFile)) {
-    return 0;
-  }
-  const lang = fs.readFileSync(langFile, 'utf8');
-  const match = lang.replace(/\n/g, '').match(/(?<=key)\d+(?=:\s\W+})/g);
-  return match ? match[match.length - 1] : 0;
-}
-
-function setLastKeyIndex() {
-  keyConfig.keyIndex = getLasteKeyIndex();
-}
-
 async function translateFiles(files) {
   let translatedFiles = [];
-  setLastKeyIndex();
   for await (let file of files) {
     const { filePath, texts: textObjs } = file;
     const texts = Array.from(new Set(textObjs.map((textObj) => textObj.text)));
-    const translatedTexts = await translateTexts(texts, 'en', keyConfig);
+    const translatedTexts = await translateTexts(texts, 'en');
     translatedFiles.push({ filePath, texts, translatedTexts });
   }
   return translatedFiles;

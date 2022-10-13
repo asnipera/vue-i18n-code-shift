@@ -150,7 +150,7 @@ function findChineseText(filePath) {
     const textInTemplate = template ? findTextInTemplate(template.content) : [];
     const textInJs = script ? findTextInJs(script.content) : [];
     return [...textInTemplate, ...textInJs];
-  } else if (filePath.endsWith('.js')) {
+  } else if (filePath.endsWith('.js') || filePath.endsWith('.ts')) {
     return findTextInJs(fileContent);
   }
 }
