@@ -11,6 +11,9 @@ export default {
   name: 'HelloWorld',
   mounted() {
     console.log('属性');
+    // console.log('添加属性');
+    console.log('添加属性属性');
+    console.log('添性');
   },
 };
 </script>

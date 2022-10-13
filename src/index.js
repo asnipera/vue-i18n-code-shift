@@ -5,7 +5,7 @@ const commander = require('commander');
 const inquirer = require('inquirer');
 const ora = require('ora');
 const packageJson = require('../package.json');
-const { getProjectConfig } = require('./utils/config');
+const { getProjectConfig, getLangRelaDir } = require('./utils/config');
 const { init } = require('./commands/init');
 const { extractAll } = require('./commands/extract');
 const { replaceAll } = require('./commands/replace');
@@ -14,6 +14,7 @@ const { exportLang } = require('./commands/export');
 const { importLang } = require('./commands/import');
 const { moveRules } = require('./commands/moveRules');
 const { check } = require('./commands/check');
+const { clearConsole } = require('./utils/common');
 
 const CONFIG = getProjectConfig();
 
@@ -35,6 +36,7 @@ program
 
     if (!confirm) {
       spining('初始化项目', async () => {
+        clearConsole();
         await init();
       });
     } else {
@@ -44,6 +46,7 @@ program
         message: '请输入 vics 相关目录：',
       });
       spining('初始化项目', async () => {
+        clearConsole();
         await init(dir);
       });
     }
@@ -53,12 +56,13 @@ program
   .command('one [dirPath] [level] [langFilename]')
   .description('一键提取并替换指定文件夹、指定层级(默认为0)下的所有中文文案')
   .action(async (dirPath, level, langFilename) => {
-    if (!CONFIG.baiduAppid) {
+    if (!CONFIG.keyPrefix && !CONFIG.baiduAppid) {
       console.log('请配置 baiduAppid');
       return;
     }
 
     if (dirPath) {
+      clearConsole();
       await extractAndReplace(dirPath, level, langFilename);
     } else {
       console.log('一键提取替换需要指定文件夹路径');
@@ -70,7 +74,14 @@ program
   .description('提取指定文件夹、指定层级(默认为0)下的所有中文文案')
   .action(async (dirPath, level, langFilename) => {
     if (dirPath) {
+      clearConsole();
       await extractAll(dirPath, level, langFilename);
+      const langRelaDir = getLangRelaDir(CONFIG.srcLang);
+      console.log(
+        chalk.greenBright(
+          `${dirPath}目录下所有中文文案已成功提取到：${langRelaDir}\\index.js`
+        )
+      );
     } else {
       console.log('提取需要指定文件夹路径');
     }
@@ -81,6 +92,7 @@ program
   .description('替换指定文件夹、指定层级(默认为0)下的所有中文文案')
   .action(async (dirPath, level, langFilename) => {
     if (dirPath) {
+      clearConsole();
       await replaceAll(dirPath, level, langFilename);
     } else {
       console.log('替换需要指定文件夹路径');
@@ -102,8 +114,10 @@ program
   .action(async (lang, range, businessLine, outputFilename) => {
     spining('导出未翻译的文案', async () => {
       if (lang && !range) {
+        clearConsole();
         await exportLang();
       } else if (range && businessLine && outputFilename) {
+        clearConsole();
         await exportLang(lang, range, businessLine, outputFilename);
       }
     });
@@ -114,6 +128,7 @@ program
   .description('将翻译好的文案，导入到项目中')
   .action(async (lang, filePath) => {
     spining('导入翻译好的文案', async () => {
+      clearConsole();
       importLang(lang, filePath);
     });
   });
@@ -123,6 +138,7 @@ program
   .description('移动 rules')
   .action(async (paths) => {
     if (paths.length > 0) {
+      clearConsole();
       await moveRules(paths);
     }
   });
@@ -132,6 +148,7 @@ program
   .description('校验语料')
   .action(async (filePath) => {
     spining('校验语料', async () => {
+      clearConsole();
       await check(filePath);
     });
   });

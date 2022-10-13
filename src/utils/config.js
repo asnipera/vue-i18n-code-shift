@@ -45,9 +45,15 @@ function getLangDir(lang) {
   return path.resolve(langsDir, lang);
 }
 
+function getLangRelaDir(lang) {
+  const langsDir = getVicsDir();
+  return `${langsDir}\\${lang}`.slice(2).replace(/\//g, '\\');
+}
+
 module.exports = {
   lookForFiles,
   getProjectConfig,
   getVicsDir,
   getLangDir,
+  getLangRelaDir,
 };

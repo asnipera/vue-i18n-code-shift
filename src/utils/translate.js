@@ -2,6 +2,7 @@ const axios = require('axios').default;
 const MD5 = require('./md5');
 const { getProjectConfig } = require('./config');
 const { sleep } = require('./common');
+const fs = require('fs');
 
 const BAI_DU_LIMIT_WORD = 800;
 
@@ -106,8 +107,25 @@ let keyConfig = {
   keyIndex: 0,
 };
 
+function getLasteKeyIndex() {
+  const projectConfig = getProjectConfig();
+  const { vicsDir, srcLang } = projectConfig;
+  const langFile = `${vicsDir}/${srcLang}/index.js`;
+  if (!fs.existsSync(langFile)) {
+    return 0;
+  }
+  const lang = fs.readFileSync(langFile, 'utf8');
+  const match = lang.replace(/\n/g, '').match(/(?<=key)\d+(?=:\s\W+})/g);
+  return match ? match[match.length - 1] : 0;
+}
+
+function setLastKeyIndex() {
+  keyConfig.keyIndex = getLasteKeyIndex();
+}
+
 async function translateFiles(files) {
   let translatedFiles = [];
+  setLastKeyIndex();
   for await (let file of files) {
     const { filePath, texts: textObjs } = file;
     const texts = Array.from(new Set(textObjs.map((textObj) => textObj.text)));
@@ -121,3 +139,6 @@ module.exports = {
   translateFiles,
   translateTexts,
 };
+
+// 匹配最后一个`key`
+const reg = /key\d+(\W\s*\W(.*))/g;

@@ -6,6 +6,7 @@ const { getProjectConfig, getLangDir } = require('../../utils/config');
 const { formatText, prettierFile } = require('../../utils/common');
 const slash = require('slash2');
 const { mkdirsSync } = require('../../utils/dir');
+const { green } = require('chalk');
 
 const CONFIG = getProjectConfig();
 const srcLangDir = getLangDir(CONFIG.srcLang);
@@ -26,7 +27,6 @@ function updateLangFiles(filename, translatedFiles) {
       targetFilename,
       updateExistLangFile(targetFilename, translatedFiles)
     );
-    console.log(`成功更新语言文件 ${targetFilename}`);
   }
 }
 

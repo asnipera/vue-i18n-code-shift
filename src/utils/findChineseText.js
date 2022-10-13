@@ -3,6 +3,7 @@ const compiler = require('vue-template-compiler');
 const ts = require('typescript');
 const { getSpecifiedFiles, readFile } = require('./file');
 const { getProjectConfig } = require('./config');
+const { yellow } = require('chalk');
 
 const CONFIG = getProjectConfig();
 const DOUBLE_BYTE_REGEX = /[^\x00-\xff]/g;
@@ -161,7 +162,11 @@ function findAllChineseText(dirPath) {
     CONFIG.ignoreFile
   );
   const filterFiles = filesPath.filter((filePath) => {
-    return filePath.endsWith('.vue') || filePath.endsWith('.js') || filePath.endsWith('.ts');
+    return (
+      filePath.endsWith('.vue') ||
+      filePath.endsWith('.js') ||
+      filePath.endsWith('.ts')
+    );
   });
   const allTexts = filterFiles.reduce((all, filePath) => {
     const texts = findChineseText(filePath);
@@ -169,7 +174,7 @@ function findAllChineseText(dirPath) {
     const sortTexts = _.sortBy(texts, (obj) => -obj.range.start);
 
     if (texts.length > 0) {
-      console.log(`${filePath} 发现中文文案`);
+      console.log(`发现中文文案：${yellow(filePath)} `);
     }
 
     return texts.length > 0 ? all.concat({ filePath, texts: sortTexts }) : all;

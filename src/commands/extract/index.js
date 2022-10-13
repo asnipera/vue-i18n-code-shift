@@ -9,25 +9,31 @@ const { updateLangFiles } = require('./updateLangFile');
 
 const CONFIG = getProjectConfig();
 
-const extractDir = async (dirPath, langFile) => {
+function isIgnoreDir(dir) {
+  const scanDir = slash(dir);
+  return CONFIG.ignoreDir.find((item) => scanDir.includes(item));
+}
+
+const extractDir = async (dirPath) => {
+  if (isIgnoreDir(dirPath)) return;
   const translateTargets = findAllChineseText(dirPath);
 
   if (translateTargets.length === 0) {
     console.log(`${dirPath} 没有发现可替换的文案！`);
     return;
   }
-
   const translatedTargets = await translateFiles(translateTargets);
 
-  await updateLangFiles(`index`, translatedTargets);
+  updateLangFiles(`index`, translatedTargets);
 };
 
 const extractDirs = async (dirs, langFile) => {
   for await (let dirPath of dirs) {
     if (dirPath && fs.statSync(dirPath).isDirectory()) {
-      console.log(`开始提取 ${dirPath} 目录`);
-      await extractDir(dirPath, langFile);
-      console.log(`${dirPath} 提取完成！`);
+      const res = await extractDir(dirPath, langFile);
+      if (res) {
+        console.log(`${dirPath} 提取完成！`);
+      }
     } else {
       console.log(`${dirPath} 不存在！`);
     }
@@ -35,7 +41,7 @@ const extractDirs = async (dirs, langFile) => {
 };
 
 const extractAll = async (dir, depth = '0', langFile) => {
-  if (!CONFIG.baiduAppid) {
+  if (!CONFIG.keyPrefix && !CONFIG.baiduAppid) {
     console.log('请配置 baiduAppid');
     return;
   }
