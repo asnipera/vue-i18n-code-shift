@@ -63,18 +63,24 @@ function cutText(allTexts) {
   return res;
 }
 
-async function translate(piece, toLang, index) {
+async function translate(piece, toLang, keyConfig = { keyIndex: 0 }) {
   const { keyPrefix, baiduAppAPI, rate } = getProjectConfig();
   if (keyPrefix) {
-    return piece.map((text) => `${keyPrefix}${index}`);
+    return piece.map(() => {
+      keyConfig.keyIndex++;
+      return `${keyPrefix}.${keyConfig.keyIndex}`;
+    });
   } else {
     await sleep(rate);
     return await translateTextByBaidu(piece, toLang, baiduAppAPI);
   }
 }
 
-async function translateTexts(texts, toLang = 'en') {
-  let index = 0;
+async function translateTexts(
+  texts,
+  toLang = 'en',
+  keyConfig = { keyIndex: 0 }
+) {
   const allTexts = texts.reduce((acc, curr) => {
     // 避免翻译的字符里包含数字或者特殊字符等情况
     const reg = /[^a-zA-Z\x00-\xff]+/g;
@@ -86,8 +92,7 @@ async function translateTexts(texts, toLang = 'en') {
     let result = [];
     for await (piece of cutText(allTexts)) {
       if (piece.length && piece.join('').length) {
-        const translated = await translate(piece, toLang, ++index);
-        console.log(translated);
+        const translated = await translate(piece, toLang, keyConfig);
         result = [...result, ...translated];
       }
     }
@@ -97,12 +102,16 @@ async function translateTexts(texts, toLang = 'en') {
   }
 }
 
+let keyConfig = {
+  keyIndex: 0,
+};
+
 async function translateFiles(files) {
   let translatedFiles = [];
   for await (let file of files) {
     const { filePath, texts: textObjs } = file;
     const texts = Array.from(new Set(textObjs.map((textObj) => textObj.text)));
-    const translatedTexts = await translateTexts(texts);
+    const translatedTexts = await translateTexts(texts, 'en', keyConfig);
     translatedFiles.push({ filePath, texts, translatedTexts });
   }
   return translatedFiles;

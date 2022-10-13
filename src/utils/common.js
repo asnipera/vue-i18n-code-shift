@@ -18,7 +18,6 @@ function findMatchValue(langObj, key) {
 }
 
 function formatText(text) {
-  console.log('text', text);
   return text
     .replace(/\\n/g, '')
     .replace(/\s*/g, '')
