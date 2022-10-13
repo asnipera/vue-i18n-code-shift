@@ -26,19 +26,18 @@ function updateLangFile(langContent, lang) {
   });
 }
 
-function importLang(lang, filePath) {
+function importLang(lang = 'en-US', filePath) {
   const langDir = `${CONFIG.vicsDir}/${CONFIG.langMap[lang]}`;
   if (!fs.existsSync(langDir)) {
     console.log(`${lang} 对应的语言目录不存在，请使用 --sync 先同步语料`);
     return false;
   }
+  filePath = filePath ?? `${CONFIG.vicsDir}/待翻译语料-en-US.xlsx`;
   if (!fs.existsSync(filePath)) {
     console.log(`${filePath} 要导入的语料文件不存在，请先确认文件路径`);
     return false;
   }
-
   const langContent = xlsx.parse(filePath);
-
   if (langContent.length > 0) {
     updateLangFile(langContent, CONFIG.langMap[lang]);
     console.log(`已导入 ${lang} 对应的语料：${filePath}`);

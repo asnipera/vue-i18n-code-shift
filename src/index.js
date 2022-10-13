@@ -114,11 +114,7 @@ program
   .description('将翻译好的文案，导入到项目中')
   .action(async (lang, filePath) => {
     spining('导入翻译好的文案', async () => {
-      if (lang && !filePath) {
-        await importLang();
-      } else if (filePath) {
-        await importLang(lang, filePath);
-      }
+      importLang(lang, filePath);
     });
   });
 

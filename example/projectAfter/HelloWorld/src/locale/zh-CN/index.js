@@ -1,5 +1,5 @@
 export default {
-  baidu1: '摇一摇',
-  baidu2: '属性',
-  baidu3: '哈哈哈',
+  shake: '摇一摇',
+  attribute: '属性',
+  haHaHa: '哈哈哈',
 };
