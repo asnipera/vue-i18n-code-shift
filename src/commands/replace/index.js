@@ -12,7 +12,6 @@ const replaceDir = async (dirPath, langFile) => {
   const translateTargets = findAllChineseText(dirPath);
 
   if (translateTargets.length === 0) {
-    console.log(`${dirPath} 没有发现可替换的文案！`);
     return;
   }
 
