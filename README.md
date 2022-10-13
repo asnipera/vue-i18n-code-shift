@@ -1,6 +1,6 @@
 # vue-i18n-auto-generate
 
-vue 项目国际化全流程解决方案: 一个命令行工具，对代码里的中文文案一键完成提取、替换、翻译、导入、导出等，告别手动操作
+### 一键完成整个项目中文文案的提取、替换、翻译、导入、导出
 
 ## 功能
 
@@ -15,6 +15,12 @@ npm install -g vue-i18n-auto-generate
 ```
 
 ## 使用
+
+```js
+viag init
+//  cli为`viag`提供了一个简单好记的别名`i18n`
+i18n init
+```
 
 ### 示例
 
@@ -32,8 +38,6 @@ npm install -g vue-i18n-auto-generate
   ![js](https://github.com/jonjia/vue-i18n-code-shift/raw/main/assets/js.png)
 
 ## 命令
-
-### `viag init` or `i18n init`
 
 ```js
 "bin": {
@@ -55,17 +59,17 @@ npm install -g vue-i18n-auto-generate
 
   // 语言目录名，注意连线和下划线
   srcLang: 'zh-CN',
-  distLangs: ['en'],
+  distLangs: ['en-US'],
   langMap: {
-    'en_US': 'en',
-    'en-US': 'en',
-    'en': 'en',
+    en_US: 'en_US',
+    'en-US': 'en-US',
+    en: 'en',
   },
-
-  // 百度翻译
-  baiduAppid: '',
-  baiduKey: '',
-
+  keyPrefix: '', // 如果设置了keyPrefix, 则生成的key为: `${keyPrefix}${index}`；否则通过百度翻译生成key
+    // https://api.fanyi.baidu.com/doc/21, 通用翻译API接入文档
+    baiduAppAPI: 'https://fanyi-api.baidu.com/api/trans/vip/translate',
+    baiduAppid: '20200602000482988',
+    baiduKey: 'CF5_meZdDAOtDzVkn2Nv',
   // I18N import 语句，请按照自己项目情况配置
   importI18N: "import I18N from '@/i18n';",
   // import 语句后缀，用于判断是否已经引入过
@@ -76,7 +80,7 @@ npm install -g vue-i18n-auto-generate
   ignoreFile: [],
 
   // 导出未翻译的文案，Excel 列的配置
-  exportColConfig: ['export_path', '业务线', 'business_key', '描述（字典值）', '语料类型', '最长字符', '首字母大写', '语料说明图', 'translatable', 'formatted', 'zh_CN'],
+  exportColConfig: ['export_path', '业务线', 'business_key', '描述（字典值）', '语料类型', '最长字符', '首字母大写', '语料说明图', 'translatable', 'formatted', 'zh_CN','en_US',],
   // 导出未翻译的文案，业务线、key、文案在 Excel 中列的索引
   exportColIndexMap: {
     businessLine: 1,
