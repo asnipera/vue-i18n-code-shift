@@ -77,7 +77,7 @@ function updateTargetFile({ filePath, texts, langObj, langFilename }) {
           newText = ` \$t('${langFilename}.${matchedKey}') `;
         }
         if (oldText.includes('>')) {
-          oldText = oldText.match(DOUBLE_BYTE_REGEX_WITH_ESCAPE).join('');
+          oldText = (oldText.match(DOUBLE_BYTE_REGEX_WITH_ESCAPE) ?? []).join('');
           newText = `{{ \$t('${langFilename}.${matchedKey}') }}`;
         }
         if (matchedKey) {
