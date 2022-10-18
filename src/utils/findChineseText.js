@@ -7,7 +7,7 @@ const { yellow } = require('chalk');
 
 const CONFIG = getProjectConfig();
 const DOUBLE_BYTE_REGEX = /[^\x00-\xff]/g;
-// const PART_DOUBLE_BYTE_REGEX = /[^\x00-\xff]+/g;
+const PART_DOUBLE_BYTE_REGEX = /[^\x00-\xff]+/g;
 
 function findTextInTemplate(code) {
   const matches = [];
@@ -31,16 +31,28 @@ function findTextInTemplate(code) {
     }
   }
 
+  // 从AST节点text中提取出纯文字内容
+  function getPureText(text) {
+    const matchTexts = [...new Set(text.match(PART_DOUBLE_BYTE_REGEX) ?? [])]
+    return matchTexts.map(matchText => ({
+      start: text.indexOf(matchText),
+      text: matchText
+    }))
+  }
+
   function visit(node) {
-    const { type, text, start, end } = node;
+    const { type, text, start } = node;
     if ((type === 3 || type === 2) && text && text.match(DOUBLE_BYTE_REGEX)) {
-      matches.push({
-        range: { start, end },
-        text,
-        isAttr: false,
-        isString: true,
-        isTemplate: true,
-      });
+      const pureTexts = getPureText(text)
+      pureTexts.forEach(pureText => {
+        matches.push({
+          range: { start: start + pureText.start, end: start + pureText.start + pureText.text.length },
+          text: pureText.text,
+          isAttr: false,
+          isString: true,
+          isTemplate: true,
+        });
+      })
     }
 
     if (node.attrsList && node.attrsList.length) {
