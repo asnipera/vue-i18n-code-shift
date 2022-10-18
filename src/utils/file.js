@@ -41,7 +41,8 @@ function notIgnoreDirectory(ignoreDirectory, names) {
   if (ignoreDirectory.length === 0) {
     return true;
   }
-  return !ignoreDirectory.some((ignoreDir) => names.includes(ignoreDir));
+  const transNames = names.map(name => name.replaceAll('\\', '/'))
+  return !ignoreDirectory.some((ignoreDir) => transNames.includes(ignoreDir));
 }
 
 function getDirsByLevel(
