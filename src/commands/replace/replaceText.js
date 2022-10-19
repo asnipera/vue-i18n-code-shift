@@ -30,22 +30,27 @@ function updateTargetFile({ filePath, texts, langObj, langFilename }) {
         isString,
         isTemplate,
         isAttr,
+        isInMustache
       } = target;
       if (text.includes('[') && text.includes(']')) {
         return;
       }
       const matchedKey = findMatchKey(langObj, formatText(text));
       let langFileText = text;
-      if (isString && !isAttr) {
+      if (isString && !isAttr && !isInMustache) {
         let replaceText = `I18N.t('${langFilename}.${matchedKey}')`;
         let oldText = jsCode.slice(start, end);
         let left = jsCode.slice(start, start + 1);
         let right = jsCode.slice(end - 1, end);
         if (isTemplate) {
           replaceText = `{{ \$t('${langFilename}.${matchedKey}') }}`;
-          left = templateCode.slice(start, start + 1);
-          right = templateCode.slice(end + 1, end + 2);
-          oldText = templateCode.slice(start, end + 2);
+          // 未能追溯到字符偏差的原因，原作者代码暂时保留
+          // left = templateCode.slice(start, start + 1);
+          // right = templateCode.slice(end + 1, end + 2);
+          // oldText = templateCode.slice(start, end + 2);
+          left = templateCode.slice(start + 3, start + 4);
+          right = templateCode.slice(end + 4, end + 5);
+          oldText = templateCode.slice(start + 3, end + 5);
         }
 
         let newText = `${left}${replaceText}${right}`;
@@ -107,12 +112,26 @@ function updateTargetFile({ filePath, texts, langObj, langFilename }) {
           );
         }
       } else if (isString && isAttr) {
-        const oldAttr = templateCode.slice(start + 1, end + 1);
+        // 未能追溯到字符偏差的原因，原作者代码暂时保留
+        // const oldAttr = templateCode.slice(start + 1, end + 1);
+        const oldAttr = templateCode.slice(start + 4, end + 4);
         let replaceAttr = `\$t('${langFilename}.${matchedKey}')`;
         const [left] = oldAttr.match(/\s*/g);
         let newAttr = `${left}:${oldAttr.trim().replace(text, replaceAttr)}`;
         if (matchedKey) {
           newFileContent = newFileContent.replace(oldAttr, newAttr);
+        }
+      } else if (isString && isInMustache) {
+        const left = templateCode.slice(start + 3, start + 4);
+        const right = templateCode.slice(end + 4, end + 5);
+        const oldText = templateCode.slice(start + 3, end + 5);
+        let replaceText = `\$t('${langFilename}.${matchedKey}')`;
+        let newText = `${left}${replaceText}${right}`;
+        if (left === '"' || left === "'") {
+          newText = `${replaceText}`;
+        }
+        if (matchedKey) {
+          newFileContent = newFileContent.replace(oldText, newText);
         }
       }
       if (text !== langFileText) {
