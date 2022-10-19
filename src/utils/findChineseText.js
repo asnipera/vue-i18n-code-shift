@@ -27,17 +27,22 @@ function findTextInTemplate(code) {
         isAttr: true,
         isString: true,
         isTemplate: true,
+        isInMustache: false
       });
     }
   }
 
   // 从AST节点text中提取出纯文字内容
   function getPureText(text) {
-    const matchTexts = [...new Set(text.match(PART_DOUBLE_BYTE_REGEX) ?? [])]
-    return matchTexts.map(matchText => ({
-      start: text.indexOf(matchText),
-      text: matchText
-    }))
+    const matchTexts = text.match(PART_DOUBLE_BYTE_REGEX) ?? []
+    return matchTexts.map(matchText => {
+      const isInMustache = !!text.match(new RegExp(`\{\{(.(?!}}))*${matchText}(.(?!\{\{))*}}`, 'g'))
+      return {
+        start: text.indexOf(matchText),
+        text: matchText,
+        isInMustache
+      }
+    })
   }
 
   function visit(node) {
@@ -51,6 +56,7 @@ function findTextInTemplate(code) {
           isAttr: false,
           isString: true,
           isTemplate: true,
+          isInMustache: pureText.isInMustache
         });
       })
     }
