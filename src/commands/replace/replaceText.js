@@ -30,7 +30,8 @@ function updateTargetFile({ filePath, texts, langObj, langFilename }) {
         isString,
         isTemplate,
         isAttr,
-        isInMustache
+        isInMustache,
+        inInTemplateString
       } = target;
       if (text.includes('[') && text.includes(']')) {
         return;
@@ -128,7 +129,10 @@ function updateTargetFile({ filePath, texts, langObj, langFilename }) {
         let replaceText = `\$t('${langFilename}.${matchedKey}')`;
         let newText = `${left}${replaceText}${right}`;
         if (left === '"' || left === "'") {
-          newText = `${replaceText}`;
+          newText = replaceText;
+        }
+        if (inInTemplateString) {
+          newText = left + '${' + replaceText + '}' + right;
         }
         if (matchedKey) {
           newFileContent = newFileContent.replace(oldText, newText);

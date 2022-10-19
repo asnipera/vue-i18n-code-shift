@@ -37,10 +37,14 @@ function findTextInTemplate(code) {
     const matchTexts = text.match(PART_DOUBLE_BYTE_REGEX) ?? []
     return matchTexts.map(matchText => {
       const isInMustache = !!text.match(new RegExp(`\{\{(.(?!}}))*${matchText}(.(?!\{\{))*}}`, 'g'))
+      const left = text.split(matchText)[0]
+      const backQuoteNum = left.split('').filter(t => t === '`').length
+      const inInTemplateString = !!(backQuoteNum % 2)
       return {
         start: text.indexOf(matchText),
         text: matchText,
-        isInMustache
+        isInMustache,
+        inInTemplateString
       }
     })
   }
@@ -56,7 +60,8 @@ function findTextInTemplate(code) {
           isAttr: false,
           isString: true,
           isTemplate: true,
-          isInMustache: pureText.isInMustache
+          isInMustache: pureText.isInMustache,
+          inInTemplateString: pureText.inInTemplateString
         });
       })
     }
