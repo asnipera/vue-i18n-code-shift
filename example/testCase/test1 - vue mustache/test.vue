@@ -18,7 +18,7 @@ export default {
   name: "HelloWorld",
   mounted() {
     // 你好
-    console.log("你好", "世界");
+    console.log("你好", `${data + "世界一"}世界二`);
   },
 };
 </script>

@@ -32,27 +32,10 @@ function findTextInTemplate(code) {
     }
   }
 
-  // 从AST节点text中提取出纯文字内容
-  function getPureText(text) {
-    const matchTexts = text.match(PART_DOUBLE_BYTE_REGEX) ?? []
-    return matchTexts.map(matchText => {
-      const isInMustache = !!text.match(new RegExp(`\{\{(.(?!}}))*${matchText}(.(?!\{\{))*}}`, 'g'))
-      const left = text.split(matchText)[0]
-      const backQuoteNum = left.split('').filter(t => t === '`').length
-      const inInTemplateString = !!(backQuoteNum % 2)
-      return {
-        start: text.indexOf(matchText),
-        text: matchText,
-        isInMustache,
-        inInTemplateString
-      }
-    })
-  }
-
   function visit(node) {
     const { type, text, start } = node;
     if ((type === 3 || type === 2) && text && text.match(DOUBLE_BYTE_REGEX)) {
-      const pureTexts = getPureText(text)
+      const pureTexts = getPureText(text, 'template')
       pureTexts.forEach(pureText => {
         matches.push({
           range: { start: start + pureText.start, end: start + pureText.start + pureText.text.length },
@@ -121,19 +104,24 @@ function findTextInJs(code) {
         break;
       }
       case ts.SyntaxKind.TemplateExpression: {
+        // 模板字符串情况
         const { pos, end } = node;
         const templateContent = code.slice(pos, end);
 
         if (templateContent.match(DOUBLE_BYTE_REGEX)) {
+          const pureTexts = getPureText(templateContent, 'js')
           const start = node.getStart();
-          const end = node.getEnd();
-          const range = { start, end };
-          matches.push({
-            range,
-            text: code.slice(start + 1, end - 1),
-            isAttr: false,
-            isString: true,
-          });
+          pureTexts.forEach(pureText => {
+            matches.push({
+              range: { start: start + pureText.start, end: start + pureText.start + pureText.text.length },
+              text: pureText.text,
+              isAttr: false,
+              isString: true,
+              isTemplate: false,
+              isInMustache: false,
+              inInTemplateString: true
+            });
+          })
         }
         break;
       }
@@ -161,6 +149,28 @@ function findTextInJs(code) {
   ts.forEachChild(ast, visit);
 
   return matches;
+}
+
+/**
+ * 从AST节点text中提取出纯文字内容
+ * @param {*} text 原始文本
+ * @param {*} from 文本来源 template | js
+ * @returns 纯文本数组
+ */
+function getPureText(text, from) {
+  const matchTexts = text.match(PART_DOUBLE_BYTE_REGEX) ?? []
+  return matchTexts.map(matchText => {
+    const isInMustache = from === 'template' ? !!text.match(new RegExp(`\{\{(.(?!}}))*${matchText}(.(?!\{\{))*}}`, 'g')) : false
+    const left = text.split(matchText)[0]
+    const backQuoteNum = left.split('').filter(t => t === '`').length
+    const inInTemplateString = !!(backQuoteNum % 2)
+    return {
+      start: text.indexOf(matchText),
+      text: matchText,
+      isInMustache,
+      inInTemplateString
+    }
+  })
 }
 
 function findChineseText(filePath) {
