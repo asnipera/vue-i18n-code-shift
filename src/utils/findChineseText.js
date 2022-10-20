@@ -158,7 +158,14 @@ function findTextInJs(code) {
  * @returns 纯文本数组
  */
 function getPureText(text, from) {
-  const matchTexts = text.match(PART_DOUBLE_BYTE_REGEX) ?? []
+  let matchTexts = text.match(PART_DOUBLE_BYTE_REGEX) ?? []
+  if (from === 'js') {
+    matchTexts = matchTexts.filter(matchText => {
+      // 模板字符串${}中出现的"文字"将被重复计入，在这里去掉
+      return !text.match(new RegExp(`["']\s*${matchText}\s*["']`, 'g'))
+    })
+  }
+
   return matchTexts.map(matchText => {
     const isInMustache = from === 'template' ? !!text.match(new RegExp(`\{\{(.(?!}}))*${matchText}(.(?!\{\{))*}}`, 'g')) : false
     const left = text.split(matchText)[0]
