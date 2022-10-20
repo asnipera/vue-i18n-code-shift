@@ -95,6 +95,12 @@ function updateTargetFile({ filePath, texts, langObj, langFilename }) {
                 return oldText;
               }
 
+              const htmlNotel = beforeStr.match(/<!--/g) ?? []
+              const htmlNoter = beforeStr.match(/-->/g) ?? []
+              if (isTemplate && htmlNotel.length !== htmlNoter.length) {
+                return oldText;
+              }
+
               const prevChar = string.slice(offset - 1, offset);
               const nextChar = string.slice(
                 offset + oldText.length,
