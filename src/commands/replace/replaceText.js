@@ -43,6 +43,12 @@ function updateTargetFile({ filePath, texts, langObj, langFilename }) {
         let oldText = jsCode.slice(start, end);
         let left = jsCode.slice(start, start + 1);
         let right = jsCode.slice(end - 1, end);
+        if (inInTemplateString) {
+          replaceText = '${' + `I18N.t('${langFilename}.${matchedKey}')` + '}';
+          left = jsCode.slice(start - 2, start - 1);
+          right = jsCode.slice(end - 1, end);
+          oldText = jsCode.slice(start - 2, end);
+        }
         if (isTemplate) {
           replaceText = `{{ \$t('${langFilename}.${matchedKey}') }}`;
           // 未能追溯到字符偏差的原因，原作者代码暂时保留
@@ -57,22 +63,6 @@ function updateTargetFile({ filePath, texts, langObj, langFilename }) {
         let newText = `${left}${replaceText}${right}`;
         if (!isTemplate && (left === '"' || left === "'")) {
           newText = `${replaceText}`;
-        } else if (!isTemplate && left === '`') {
-          const varInStr = text.match(/(\$\{[^\}]+?\})/g);
-          if (varInStr) {
-            const kvPair = varInStr.map((str, index) => {
-              return `val${index + 1}: ${str.replace(/^\${([^\}]+)\}$/, '$1')}`;
-            });
-            newText = `I18N.t('${langFilename}.${matchedKey}', { ${kvPair.join(
-              ',\n'
-            )} })`;
-
-            varInStr.forEach((str, index) => {
-              langFileText = langFileText.replace(str, `{val${index + 1}}`);
-            });
-          } else {
-            newText = `${replaceText}`;
-          }
         } else if (isTemplate && oldText.includes('{{')) {
           const old = templateCode.slice(start + 1, end + 1);
           oldText = old
