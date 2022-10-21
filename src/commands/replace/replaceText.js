@@ -9,9 +9,6 @@ const { updateLangFileWithNewText } = require('../extract/updateLangFile');
 
 const CONFIG = getProjectConfig();
 const srcLangDir = getLangDir(CONFIG.srcLang);
-const DOUBLE_BYTE_REGEX_WITH_ESCAPE =
-  /[^\x00-\xff]|\(|\)|-|[0-9|a-z|A-Z]|&|\+|=/g;
-const DOUBLE_BYTE_REGEX = /[^\x00-\xff]/g;
 
 function updateTargetFile({ filePath, texts, langObj, langFilename }) {
   const fileContent = readFile(filePath);
@@ -72,13 +69,11 @@ function updateTargetFile({ filePath, texts, langObj, langFilename }) {
             .replace(/}}/, '');
           newText = ` \$t('${langFilename}.${matchedKey}') `;
         }
-        if (oldText.includes('>')) {
-          oldText = (oldText.match(DOUBLE_BYTE_REGEX_WITH_ESCAPE) ?? []).join('');
-          newText = `{{ \$t('${langFilename}.${matchedKey}') }}`;
-        }
+
         if (matchedKey) {
+          const escapedOldText = oldText.replaceAll(/[\[\]\{\}\(\)\\\^\$\.\|\?\*\+]/g, match => '\\' + match)
           newFileContent = newFileContent.replace(
-            new RegExp(oldText, 'g'),
+            new RegExp(escapedOldText, 'g'),
             function (match, offset, string) {
               const beforeStr = string.slice(0, offset);
               if (isTemplate && beforeStr.includes('<script>')) {
@@ -88,19 +83,6 @@ function updateTargetFile({ filePath, texts, langObj, langFilename }) {
               const htmlNotel = beforeStr.match(/<!--/g) ?? []
               const htmlNoter = beforeStr.match(/-->/g) ?? []
               if (isTemplate && htmlNotel.length !== htmlNoter.length) {
-                return oldText;
-              }
-
-              const prevChar = string.slice(offset - 1, offset);
-              const nextChar = string.slice(
-                offset + oldText.length,
-                offset + oldText.length + 1
-              );
-              if (
-                isTemplate &&
-                (prevChar.match(DOUBLE_BYTE_REGEX) ||
-                  nextChar.match(DOUBLE_BYTE_REGEX))
-              ) {
                 return oldText;
               }
 
