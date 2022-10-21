@@ -167,7 +167,7 @@ function getPureText(text, from) {
   }
 
   return matchTexts.map(matchText => {
-    const isInMustache = from === 'template' ? !!text.match(new RegExp(`\{\{(.(?!}}))*${matchText}(.(?!\{\{))*}}`, 'g')) : false
+    const isInMustache = from === 'template' ? !!text.match(new RegExp(`\\{\\{((.|\\s)(?!}}))*${matchText}((.|\\s)(?!\\{\\{))*}}`, 'g')) : false
     const left = text.split(matchText)[0]
     const backQuoteNum = left.split('').filter(t => t === '`').length
     const inInTemplateString = !!(backQuoteNum % 2)
