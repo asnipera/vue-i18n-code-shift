@@ -74,7 +74,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "debugger",
+      "name": "debugger1",
       "skipFiles": [
         "<node_internals>/**"
       ],
@@ -82,6 +82,20 @@
       "args": [
         "one",
         "./example/testCase/test1 - vue mustache"
+      ],
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "debugger2",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}/src/index.js",
+      "args": [
+        "one",
+        "./example/testCase/test2 - repetition"
       ],
       "console": "integratedTerminal"
     }
