@@ -25,7 +25,6 @@ function findTextInTemplate(code) {
         text: value,
         name,
         isAttr: true,
-        isString: true,
         isTemplate: true,
         isInMustache: false
       });
@@ -41,7 +40,6 @@ function findTextInTemplate(code) {
           range: { start: start + pureText.start, end: start + pureText.start + pureText.text.length },
           text: pureText.text,
           isAttr: false,
-          isString: true,
           isTemplate: true,
           isInMustache: pureText.isInMustache,
           inInTemplateString: pureText.inInTemplateString
@@ -98,7 +96,6 @@ function findTextInJs(code) {
             range,
             text,
             isAttr: false,
-            isString: true,
           });
         }
         break;
@@ -116,7 +113,6 @@ function findTextInJs(code) {
               range: { start: start + pureText.start, end: start + pureText.start + pureText.text.length },
               text: pureText.text,
               isAttr: false,
-              isString: true,
               isTemplate: false,
               isInMustache: false,
               inInTemplateString: true
@@ -137,7 +133,6 @@ function findTextInJs(code) {
             range,
             text: code.slice(start + 1, end - 1),
             isAttr: false,
-            isString: true,
           });
         }
       }

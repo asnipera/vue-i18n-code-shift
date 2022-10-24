@@ -24,7 +24,6 @@ function updateTargetFile({ filePath, texts, langObj, langFilename }) {
       const {
         text,
         range: { start, end },
-        isString,
         isTemplate,
         isAttr,
         isInMustache,
@@ -35,7 +34,7 @@ function updateTargetFile({ filePath, texts, langObj, langFilename }) {
       }
       const matchedKey = findMatchKey(langObj, formatText(text));
       let langFileText = text;
-      if (isString && !isAttr && !isInMustache) {
+      if (!isAttr && !isInMustache) {
         let replaceText = `I18N.t('${langFilename}.${matchedKey}')`;
         let oldText = jsCode.slice(start, end);
         let left = jsCode.slice(start, start + 1);
@@ -90,7 +89,7 @@ function updateTargetFile({ filePath, texts, langObj, langFilename }) {
             }
           );
         }
-      } else if (isString && isAttr) {
+      } else if (isAttr) {
         // 未能追溯到字符偏差的原因，原作者代码暂时保留
         // const oldAttr = templateCode.slice(start + 1, end + 1);
         const oldAttr = templateCode.slice(start + 4, end + 4);
@@ -100,7 +99,7 @@ function updateTargetFile({ filePath, texts, langObj, langFilename }) {
         if (matchedKey) {
           newFileContent = newFileContent.replace(oldAttr, newAttr);
         }
-      } else if (isString && isInMustache) {
+      } else if (isInMustache) {
         const left = templateCode.slice(start + 3, start + 4);
         const right = templateCode.slice(end + 4, end + 5);
         const oldText = templateCode.slice(start + 3, end + 5);
@@ -125,40 +124,39 @@ function updateTargetFile({ filePath, texts, langObj, langFilename }) {
       const {
         text,
         range: { start, end },
-        isString,
       } = target;
       const matchedKey = findMatchKey(langObj, formatText(text));
       let langFileText = text;
-      if (isString) {
-        const replaceText = `I18N.t('${langFilename}.${matchedKey}')`;
-        const oldText = fileContent.slice(start, end);
-        const left = fileContent.slice(start, start + 1);
-        const right = fileContent.slice(end - 1, end);
 
-        let newText = `${left}${replaceText}${right}`;
-        if (left === '"' || left === "'") {
+      const replaceText = `I18N.t('${langFilename}.${matchedKey}')`;
+      const oldText = fileContent.slice(start, end);
+      const left = fileContent.slice(start, start + 1);
+      const right = fileContent.slice(end - 1, end);
+
+      let newText = `${left}${replaceText}${right}`;
+      if (left === '"' || left === "'") {
+        newText = `${replaceText}`;
+      } else if (left === '`') {
+        const varInStr = text.match(/(\$\{[^\}]+?\})/g);
+        if (varInStr) {
+          const kvPair = varInStr.map((str, index) => {
+            return `val${index + 1}: ${str.replace(/^\${([^\}]+)\}$/, '$1')}`;
+          });
+          newText = `I18N.t('${langFilename}.${matchedKey}', { ${kvPair.join(
+            ',\n'
+          )} })`;
+
+          varInStr.forEach((str, index) => {
+            langFileText = langFileText.replace(str, `{val${index + 1}}`);
+          });
+        } else {
           newText = `${replaceText}`;
-        } else if (left === '`') {
-          const varInStr = text.match(/(\$\{[^\}]+?\})/g);
-          if (varInStr) {
-            const kvPair = varInStr.map((str, index) => {
-              return `val${index + 1}: ${str.replace(/^\${([^\}]+)\}$/, '$1')}`;
-            });
-            newText = `I18N.t('${langFilename}.${matchedKey}', { ${kvPair.join(
-              ',\n'
-            )} })`;
-
-            varInStr.forEach((str, index) => {
-              langFileText = langFileText.replace(str, `{val${index + 1}}`);
-            });
-          } else {
-            newText = `${replaceText}`;
-          }
-        }
-        if (matchedKey) {
-          newFileContent = newFileContent.replace(oldText, newText);
         }
       }
+      if (matchedKey) {
+        newFileContent = newFileContent.replace(oldText, newText);
+      }
+
       if (text !== langFileText) {
         langFileNewTexts.push({ key: matchedKey, value: langFileText });
       }
