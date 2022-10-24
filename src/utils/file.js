@@ -2,7 +2,14 @@ const path = require('path');
 const fs = require('fs');
 
 function getSpecifiedFiles(dir, ignoreDirectory = [], ignoreFile = []) {
-  return fs.readdirSync(dir).reduce((files, file) => {
+  let subFiles
+  try {
+    subFiles = fs.readdirSync(dir)
+  } catch {
+    console.log(`${dir} 路径不存在，请先确认文件路径`);
+    return []
+  }
+  return subFiles.reduce((files, file) => {
     const name = path.join(dir, file);
     const isDirectory = fs.statSync(name).isDirectory();
     const isFile = fs.statSync(name).isFile();
@@ -34,7 +41,8 @@ function notIgnoreDirectory(ignoreDirectory, names) {
   if (ignoreDirectory.length === 0) {
     return true;
   }
-  return !ignoreDirectory.some((ignoreDir) => names.includes(ignoreDir));
+  const transNames = names.map(name => name.replaceAll('\\', '/'))
+  return !ignoreDirectory.some((ignoreDir) => transNames.includes(ignoreDir));
 }
 
 function getDirsByLevel(
@@ -43,8 +51,15 @@ function getDirsByLevel(
   currentLevel = 1,
   ignoreDirectory = []
 ) {
-  const currentDirs = fs
-    .readdirSync(dirPath, { withFileTypes: true })
+  let subFiles
+  try {
+    subFiles = fs.readdirSync(dirPath, { withFileTypes: true })
+  } catch {
+    console.log(`${dirPath} 路径不存在，请先确认文件路径`);
+    return []
+  }
+
+  const currentDirs = subFiles
     .filter(
       (dirent) =>
         dirent.isDirectory() &&
